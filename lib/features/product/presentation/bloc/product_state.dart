@@ -8,17 +8,39 @@ abstract class ProductState extends Equatable {
   List<Object?> get props => [];
 }
 
-class ProductInitial extends ProductState {}
+class ProductInitial extends ProductState {
+  const ProductInitial();
+}
 
-class ProductLoading extends ProductState {}
+class ProductLoading extends ProductState {
+  const ProductLoading();
+}
 
-class ProductLoaded extends ProductState {
-  final ProductEntity data;
+class ProductsLoaded extends ProductState {
+  final List<ProductEntity> products;
 
-  const ProductLoaded({required this.data});
+  const ProductsLoaded({required this.products});
 
   @override
-  List<Object?> get props => [data];
+  List<Object?> get props => [products];
+}
+
+class ProductDetailsLoaded extends ProductState {
+  final ProductEntity product;
+
+  const ProductDetailsLoaded({required this.product});
+
+  @override
+  List<Object?> get props => [product];
+}
+
+class ProductOperationSuccess extends ProductState {
+  final String message;
+
+  const ProductOperationSuccess({required this.message});
+
+  @override
+  List<Object?> get props => [message];
 }
 
 class ProductError extends ProductState {
