@@ -30,7 +30,13 @@ import 'package:owlmart/features/product/data/datasource/product_local_data_sour
 import 'package:owlmart/features/product/data/datasource/product_remote_data_source.dart';
 import 'package:owlmart/features/product/data/repository/product_repository_impl.dart';
 import 'package:owlmart/features/product/domain/repository/product_repository.dart';
-import 'package:owlmart/features/product/domain/usecases/get_product_usecase.dart';
+import 'package:owlmart/features/product/domain/usecases/add_product_usecase.dart';
+import 'package:owlmart/features/product/domain/usecases/delete_product_usecase.dart';
+import 'package:owlmart/features/product/domain/usecases/get_product_details_usecase.dart';
+import 'package:owlmart/features/product/domain/usecases/get_products_usecase.dart';
+import 'package:owlmart/features/product/domain/usecases/search_products_usecase.dart';
+import 'package:owlmart/features/product/domain/usecases/toggle_product_status_usecase.dart';
+import 'package:owlmart/features/product/domain/usecases/update_product_usecase.dart';
 import 'package:owlmart/features/product/presentation/bloc/product_bloc.dart';
 
 // Category Feature
@@ -148,17 +154,32 @@ Future<void> init() async {
   );
 
   // 3. Product
-  sl.registerFactory(() => ProductBloc(getProductUseCase: sl()));
-  sl.registerLazySingleton(() => GetProductUseCase(repository: sl()));
+  sl.registerFactory(
+    () => ProductBloc(
+      getProductsUseCase: sl(),
+      getProductDetailsUseCase: sl(),
+      addProductUseCase: sl(),
+      updateProductUseCase: sl(),
+      deleteProductUseCase: sl(),
+      toggleProductStatusUseCase: sl(),
+      searchProductsUseCase: sl(),
+    ),
+  );
+  sl.registerLazySingleton(() => GetProductsUseCase(repository: sl()));
+  sl.registerLazySingleton(() => GetProductDetailsUseCase(repository: sl()));
+  sl.registerLazySingleton(() => AddProductUseCase(repository: sl()));
+  sl.registerLazySingleton(() => UpdateProductUseCase(repository: sl()));
+  sl.registerLazySingleton(() => DeleteProductUseCase(repository: sl()));
+  sl.registerLazySingleton(() => ToggleProductStatusUseCase(repository: sl()));
+  sl.registerLazySingleton(() => SearchProductsUseCase(repository: sl()));
   sl.registerLazySingleton<ProductRepository>(
     () => ProductRepositoryImpl(
       remoteDataSource: sl(),
-      localDataSource: sl(),
       networkInfo: sl(),
     ),
   );
   sl.registerLazySingleton<ProductRemoteDataSource>(
-    () => const ProductRemoteDataSourceImpl(),
+    () => ProductRemoteDataSourceImpl(firestore: sl()),
   );
   sl.registerLazySingleton<ProductLocalDataSource>(
     () => const ProductLocalDataSourceImpl(),

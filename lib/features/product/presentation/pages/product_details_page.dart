@@ -31,7 +31,9 @@ class ProductDetailsPage extends StatelessWidget {
                           builder: (_) => ProductAddEditPage(product: state.product),
                         ),
                       ).then((_) {
-                        context.read<ProductBloc>().add(LoadProductDetailsEvent(id: productId));
+                        if (context.mounted) {
+                          context.read<ProductBloc>().add(LoadProductDetailsEvent(id: productId));
+                        }
                       });
                     },
                   );

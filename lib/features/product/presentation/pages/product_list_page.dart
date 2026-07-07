@@ -226,7 +226,11 @@ class _ProductListPageState extends State<ProductListPage> {
                                     MaterialPageRoute(
                                       builder: (_) => ProductDetailsPage(productId: prod.id),
                                     ),
-                                  ).then((_) => _loadProducts(context));
+                                  ).then((_) {
+                                    if (context.mounted) {
+                                      _loadProducts(context);
+                                    }
+                                  });
                                 },
                               ),
                             );
@@ -248,7 +252,11 @@ class _ProductListPageState extends State<ProductListPage> {
                 MaterialPageRoute(
                   builder: (_) => const ProductAddEditPage(),
                 ),
-              ).then((_) => _loadProducts(context));
+              ).then((_) {
+                if (context.mounted) {
+                  _loadProducts(context);
+                }
+              });
             },
           ),
         );
