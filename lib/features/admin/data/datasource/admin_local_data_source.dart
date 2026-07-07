@@ -1,20 +1,18 @@
-import '../models/admin_model.dart';
-
 abstract class AdminLocalDataSource {
-  Future<AdminModel> getLastAdmin();
-  Future<void> cacheAdmin(AdminModel modelToCache);
+  Future<Map<String, dynamic>> getLastAdminStats();
+  Future<void> cacheAdminStats(Map<String, dynamic> statsToCache);
 }
 
 class AdminLocalDataSourceImpl implements AdminLocalDataSource {
   const AdminLocalDataSourceImpl();
 
   @override
-  Future<AdminModel> getLastAdmin() async {
+  Future<Map<String, dynamic>> getLastAdminStats() async {
     throw UnimplementedError();
   }
 
   @override
-  Future<void> cacheAdmin(AdminModel modelToCache) async {
+  Future<void> cacheAdminStats(Map<String, dynamic> statsToCache) async {
     throw UnimplementedError();
   }
 }

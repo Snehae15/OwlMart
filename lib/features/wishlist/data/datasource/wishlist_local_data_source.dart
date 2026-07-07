@@ -1,20 +1,20 @@
-import '../models/wishlist_model.dart';
+import '../models/wishlist_item_model.dart';
 
 abstract class WishlistLocalDataSource {
-  Future<WishlistModel> getLastWishlist();
-  Future<void> cacheWishlist(WishlistModel modelToCache);
+  Future<List<WishlistItemModel>> getLastWishlist();
+  Future<void> cacheWishlist(List<WishlistItemModel> itemsToCache);
 }
 
 class WishlistLocalDataSourceImpl implements WishlistLocalDataSource {
   const WishlistLocalDataSourceImpl();
 
   @override
-  Future<WishlistModel> getLastWishlist() async {
+  Future<List<WishlistItemModel>> getLastWishlist() async {
     throw UnimplementedError();
   }
 
   @override
-  Future<void> cacheWishlist(WishlistModel modelToCache) async {
+  Future<void> cacheWishlist(List<WishlistItemModel> itemsToCache) async {
     throw UnimplementedError();
   }
 }

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "293698711484",
+    "project_id": "owlmart-6ef8b",
+    "storage_bucket": "owlmart-6ef8b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:293698711484:android:376e820aa3ea39f52385b9",
+        "android_client_info": {
+          "package_name": "com.OwlMart.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBar5tglX6iDb-uwE-4VZaceXDSRjAK79k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:293698711484:android:2789b90d945a8fc72385b9",
+        "android_client_info": {
+          "package_name": "com.example.owlmart"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBar5tglX6iDb-uwE-4VZaceXDSRjAK79k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

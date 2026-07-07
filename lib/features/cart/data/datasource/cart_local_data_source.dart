@@ -1,20 +1,20 @@
-import '../models/cart_model.dart';
+import '../models/cart_item_model.dart';
 
 abstract class CartLocalDataSource {
-  Future<CartModel> getLastCart();
-  Future<void> cacheCart(CartModel modelToCache);
+  Future<List<CartItemModel>> getLastCart();
+  Future<void> cacheCart(List<CartItemModel> itemsToCache);
 }
 
 class CartLocalDataSourceImpl implements CartLocalDataSource {
   const CartLocalDataSourceImpl();
 
   @override
-  Future<CartModel> getLastCart() async {
+  Future<List<CartItemModel>> getLastCart() async {
     throw UnimplementedError();
   }
 
   @override
-  Future<void> cacheCart(CartModel modelToCache) async {
+  Future<void> cacheCart(List<CartItemModel> itemsToCache) async {
     throw UnimplementedError();
   }
 }

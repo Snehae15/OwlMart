@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:owlmart/app/auth_wrapper.dart';
 
 class AppRoutes {
   static const String initial = '/';
@@ -7,11 +8,7 @@ class AppRoutes {
     switch (settings.name) {
       case initial:
         return MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(
-              child: Text('OwlMart Welcome'),
-            ),
-          ),
+          builder: (_) => const AuthWrapper(),
         );
       default:
         return MaterialPageRoute(

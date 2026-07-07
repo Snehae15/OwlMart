@@ -52,7 +52,11 @@ import 'package:owlmart/features/cart/data/datasource/cart_local_data_source.dar
 import 'package:owlmart/features/cart/data/datasource/cart_remote_data_source.dart';
 import 'package:owlmart/features/cart/data/repository/cart_repository_impl.dart';
 import 'package:owlmart/features/cart/domain/repository/cart_repository.dart';
+import 'package:owlmart/features/cart/domain/usecases/add_to_cart_usecase.dart';
+import 'package:owlmart/features/cart/domain/usecases/clear_cart_usecase.dart';
 import 'package:owlmart/features/cart/domain/usecases/get_cart_usecase.dart';
+import 'package:owlmart/features/cart/domain/usecases/remove_from_cart_usecase.dart';
+import 'package:owlmart/features/cart/domain/usecases/update_cart_quantity_usecase.dart';
 import 'package:owlmart/features/cart/presentation/bloc/cart_bloc.dart';
 
 // Wishlist Feature
@@ -60,7 +64,9 @@ import 'package:owlmart/features/wishlist/data/datasource/wishlist_local_data_so
 import 'package:owlmart/features/wishlist/data/datasource/wishlist_remote_data_source.dart';
 import 'package:owlmart/features/wishlist/data/repository/wishlist_repository_impl.dart';
 import 'package:owlmart/features/wishlist/domain/repository/wishlist_repository.dart';
+import 'package:owlmart/features/wishlist/domain/usecases/add_to_wishlist_usecase.dart';
 import 'package:owlmart/features/wishlist/domain/usecases/get_wishlist_usecase.dart';
+import 'package:owlmart/features/wishlist/domain/usecases/remove_from_wishlist_usecase.dart';
 import 'package:owlmart/features/wishlist/presentation/bloc/wishlist_bloc.dart';
 
 // Search Feature
@@ -84,7 +90,14 @@ import 'package:owlmart/features/admin/data/datasource/admin_local_data_source.d
 import 'package:owlmart/features/admin/data/datasource/admin_remote_data_source.dart';
 import 'package:owlmart/features/admin/data/repository/admin_repository_impl.dart';
 import 'package:owlmart/features/admin/domain/repository/admin_repository.dart';
-import 'package:owlmart/features/admin/domain/usecases/get_admin_usecase.dart';
+import 'package:owlmart/features/admin/domain/usecases/add_category_usecase.dart';
+import 'package:owlmart/features/admin/domain/usecases/delete_category_usecase.dart';
+import 'package:owlmart/features/admin/domain/usecases/get_admin_dashboard_stats_usecase.dart';
+import 'package:owlmart/features/admin/domain/usecases/get_admin_orders_usecase.dart';
+import 'package:owlmart/features/admin/domain/usecases/get_categories_usecase.dart';
+import 'package:owlmart/features/admin/domain/usecases/update_order_status_usecase.dart';
+import 'package:owlmart/features/admin/domain/usecases/update_product_sku_usecase.dart';
+import 'package:owlmart/features/admin/domain/usecases/update_product_stock_usecase.dart';
 import 'package:owlmart/features/admin/presentation/bloc/admin_bloc.dart';
 
 final sl = GetIt.instance;
@@ -96,7 +109,9 @@ Future<void> init() async {
   sl.registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance);
   sl.registerLazySingleton<FirebaseFirestore>(() => FirebaseFirestore.instance);
   sl.registerLazySingleton<FirebaseStorage>(() => FirebaseStorage.instance);
-  sl.registerLazySingleton<GoogleSignIn>(() => GoogleSignIn());
+  sl.registerLazySingleton<GoogleSignIn>(
+    () => GoogleSignIn(clientId: 'your-client-id.apps.googleusercontent.com'),
+  );
 
   // =========================================================================
   // Core
@@ -203,34 +218,52 @@ Future<void> init() async {
   );
 
   // 5. Cart
-  sl.registerFactory(() => CartBloc(getCartUseCase: sl()));
+  sl.registerFactory(
+    () => CartBloc(
+      getCartUseCase: sl(),
+      addToCartUseCase: sl(),
+      removeFromCartUseCase: sl(),
+      updateCartQuantityUseCase: sl(),
+      clearCartUseCase: sl(),
+    ),
+  );
   sl.registerLazySingleton(() => GetCartUseCase(repository: sl()));
+  sl.registerLazySingleton(() => AddToCartUseCase(repository: sl()));
+  sl.registerLazySingleton(() => RemoveFromCartUseCase(repository: sl()));
+  sl.registerLazySingleton(() => UpdateCartQuantityUseCase(repository: sl()));
+  sl.registerLazySingleton(() => ClearCartUseCase(repository: sl()));
   sl.registerLazySingleton<CartRepository>(
     () => CartRepositoryImpl(
       remoteDataSource: sl(),
-      localDataSource: sl(),
       networkInfo: sl(),
     ),
   );
   sl.registerLazySingleton<CartRemoteDataSource>(
-    () => const CartRemoteDataSourceImpl(),
+    () => CartRemoteDataSourceImpl(firestore: sl()),
   );
   sl.registerLazySingleton<CartLocalDataSource>(
     () => const CartLocalDataSourceImpl(),
   );
 
   // 6. Wishlist
-  sl.registerFactory(() => WishlistBloc(getWishlistUseCase: sl()));
+  sl.registerFactory(
+    () => WishlistBloc(
+      getWishlistUseCase: sl(),
+      addToWishlistUseCase: sl(),
+      removeFromWishlistUseCase: sl(),
+    ),
+  );
   sl.registerLazySingleton(() => GetWishlistUseCase(repository: sl()));
+  sl.registerLazySingleton(() => AddToWishlistUseCase(repository: sl()));
+  sl.registerLazySingleton(() => RemoveFromWishlistUseCase(repository: sl()));
   sl.registerLazySingleton<WishlistRepository>(
     () => WishlistRepositoryImpl(
       remoteDataSource: sl(),
-      localDataSource: sl(),
       networkInfo: sl(),
     ),
   );
   sl.registerLazySingleton<WishlistRemoteDataSource>(
-    () => const WishlistRemoteDataSourceImpl(),
+    () => WishlistRemoteDataSourceImpl(firestore: sl()),
   );
   sl.registerLazySingleton<WishlistLocalDataSource>(
     () => const WishlistLocalDataSourceImpl(),
@@ -271,17 +304,34 @@ Future<void> init() async {
   );
 
   // 9. Admin
-  sl.registerFactory(() => AdminBloc(getAdminUseCase: sl()));
-  sl.registerLazySingleton(() => GetAdminUseCase(repository: sl()));
+  sl.registerFactory(
+    () => AdminBloc(
+      getDashboardStatsUseCase: sl(),
+      getCategoriesUseCase: sl(),
+      addCategoryUseCase: sl(),
+      deleteCategoryUseCase: sl(),
+      updateStockUseCase: sl(),
+      updateSkuUseCase: sl(),
+      getOrdersUseCase: sl(),
+      updateOrderStatusUseCase: sl(),
+    ),
+  );
+  sl.registerLazySingleton(() => GetAdminDashboardStatsUseCase(repository: sl()));
+  sl.registerLazySingleton(() => GetCategoriesUseCase(repository: sl()));
+  sl.registerLazySingleton(() => AddCategoryUseCase(repository: sl()));
+  sl.registerLazySingleton(() => DeleteCategoryUseCase(repository: sl()));
+  sl.registerLazySingleton(() => UpdateProductStockUseCase(repository: sl()));
+  sl.registerLazySingleton(() => UpdateProductSkuUseCase(repository: sl()));
+  sl.registerLazySingleton(() => GetAdminOrdersUseCase(repository: sl()));
+  sl.registerLazySingleton(() => UpdateOrderStatusUseCase(repository: sl()));
   sl.registerLazySingleton<AdminRepository>(
     () => AdminRepositoryImpl(
       remoteDataSource: sl(),
-      localDataSource: sl(),
       networkInfo: sl(),
     ),
   );
   sl.registerLazySingleton<AdminRemoteDataSource>(
-    () => const AdminRemoteDataSourceImpl(),
+    () => AdminRemoteDataSourceImpl(firestore: sl()),
   );
   sl.registerLazySingleton<AdminLocalDataSource>(
     () => const AdminLocalDataSourceImpl(),
